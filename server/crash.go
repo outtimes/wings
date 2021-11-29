@@ -49,7 +49,7 @@ func (s *Server) handleServerCrash() error {
 	if s.Environment.State() != environment.ProcessOfflineState || !s.Config().CrashDetectionEnabled {
 		if !s.Config().CrashDetectionEnabled {
 			s.Log().Debug("server triggered crash detection but handler is disabled for server process")
-			s.PublishConsoleOutputFromDaemon("Aborting automatic restart, crash detection is disabled for this instance.")
+			s.PublishConsoleOutputFromDaemon("因此服务器的崩溃检测已被停用，正在停止自动启动")
 		}
 
 		return nil
@@ -67,9 +67,9 @@ func (s *Server) handleServerCrash() error {
 		return nil
 	}
 
-	s.PublishConsoleOutputFromDaemon("---------- Detected server process in a crashed state! ----------")
-	s.PublishConsoleOutputFromDaemon(fmt.Sprintf("Exit code: %d", exitCode))
-	s.PublishConsoleOutputFromDaemon(fmt.Sprintf("Out of memory: %t", oomKilled))
+	s.PublishConsoleOutputFromDaemon("---------- 检测到服务器崩溃 ----------")
+	s.PublishConsoleOutputFromDaemon(fmt.Sprintf("推出状态码: %d", exitCode))
+	s.PublishConsoleOutputFromDaemon(fmt.Sprintf("是否为内存溢出: %t", oomKilled))
 
 	c := s.crasher.LastCrashTime()
 	timeout := config.Get().System.CrashDetection.Timeout
@@ -79,7 +79,7 @@ func (s *Server) handleServerCrash() error {
 	//
 	// If timeout is set to 0, always reboot the server (this is probably a terrible idea, but some people want it)
 	if timeout != 0 && !c.IsZero() && c.Add(time.Second*time.Duration(config.Get().System.CrashDetection.Timeout)).After(time.Now()) {
-		s.PublishConsoleOutputFromDaemon("Aborting automatic restart, last crash occurred less than " + strconv.Itoa(timeout) + " seconds ago.")
+		s.PublishConsoleOutputFromDaemon("已停止自动重启, 因为上一次崩溃的发生是在 " + strconv.Itoa(timeout) + " 秒以内。")
 		return &crashTooFrequent{}
 	}
 

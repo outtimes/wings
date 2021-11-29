@@ -44,7 +44,7 @@ func (dsl *diskSpaceLimiter) Reset() {
 // should be reset, so it can properly be triggered as needed.
 func (dsl *diskSpaceLimiter) Trigger() {
 	dsl.o.Do(func() {
-		dsl.server.PublishConsoleOutputFromDaemon("Server is exceeding the assigned disk space limit, stopping process now.")
+		dsl.server.PublishConsoleOutputFromDaemon("服务器使用了超过限制的存储空间，正在关闭...")
 		if err := dsl.server.Environment.WaitForStop(60, true); err != nil {
 			dsl.server.Log().WithField("error", err).Error("failed to stop server after exceeding space limit!")
 		}
@@ -57,7 +57,7 @@ func (s *Server) StartEventListeners() {
 	console := func(e events.Event) {
 		t := s.Throttler()
 		err := t.Increment(func() {
-			s.PublishConsoleOutputFromDaemon("Your server is outputting too much data and is being throttled.")
+			s.PublishConsoleOutputFromDaemon("你的服务器正在输出大量数据，我们对返回的内容进行了速率限制")
 		})
 		// An error is only returned if the server has breached the thresholds set.
 		if err != nil {
@@ -68,7 +68,7 @@ func (s *Server) StartEventListeners() {
 
 				go func() {
 					s.Log().Warn("stopping server instance, violating throttle limits")
-					s.PublishConsoleOutputFromDaemon("Your server is being stopped for outputting too much data in a short period of time.")
+					s.PublishConsoleOutputFromDaemon("你的服务器因在短时间内输出了太多内容已被关机，一般来说这是不正常的。")
 
 					// Completely skip over server power actions and terminate the running instance. This gives the
 					// server 15 seconds to finish stopping gracefully before it is forcefully terminated.
@@ -130,9 +130,9 @@ func (s *Server) StartEventListeners() {
 		if e.Topic == environment.DockerImagePullStatus {
 			s.Events().Publish(InstallOutputEvent, e.Data)
 		} else if e.Topic == environment.DockerImagePullStarted {
-			s.PublishConsoleOutputFromDaemon("Pulling Docker container image, this could take a few minutes to complete...")
+			s.PublishConsoleOutputFromDaemon("正在拉取Docker容器镜像, 请稍等一会...")
 		} else {
-			s.PublishConsoleOutputFromDaemon("Finished pulling Docker container image")
+			s.PublishConsoleOutputFromDaemon("拉取Docker容器镜像完成")
 		}
 	}
 
