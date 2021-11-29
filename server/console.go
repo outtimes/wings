@@ -6,6 +6,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"strings"
 
 	"emperror.dev/errors"
 	"github.com/mitchellh/colorstring"
@@ -133,8 +134,8 @@ func (s *Server) Throttler() *ConsoleThrottler {
 // PublishConsoleOutputFromDaemon sends output to the server console formatted
 // to appear correctly as being sent from Wings.
 func (s *Server) PublishConsoleOutputFromDaemon(data string) {
-	data := strings.Replace(data, "Error", "错误", -1)
-	data := strings.Replace(data, "Unable to access jarfile", "找不到要启动的JAR文件: ", -1)
+	data = strings.Replace(data, "Error", "错误", -1)
+	data = strings.Replace(data, "Unable to access jarfile", "找不到要启动的JAR文件: ", -1)
 	appNameSync.Do(func() {
 		appName = config.Get().AppName
 	})
