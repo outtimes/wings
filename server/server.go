@@ -312,7 +312,7 @@ func (s *Server) OnStateChange() {
 				if IsTooFrequentCrashError(err) {
 					server.Log().Info("did not restart server after crash; occurred too soon after the last")
 				} else {
-					s.PublishConsoleOutputFromDaemon("Server crash was detected but an error occurred while handling it.")
+					s.PublishConsoleOutputFromDaemon("已检测到服务器崩溃，但在尝试处理时出错了")
 					server.Log().WithField("error", err).Error("failed to handle server crash")
 				}
 			}

@@ -182,7 +182,7 @@ func (s *Server) onBeforeStart() error {
 	if s.DiskSpace() <= 0 {
 		s.Filesystem().HasSpaceAvailable(true)
 	} else {
-		s.PublishConsoleOutputFromDaemon("Checking server disk space usage, this could take a few seconds...")
+		s.PublishConsoleOutputFromDaemon("正在检查存储空间使用情况, 请稍等一会...")
 		if err := s.Filesystem().HasSpaceErr(false); err != nil {
 			return err
 		}
@@ -193,14 +193,14 @@ func (s *Server) onBeforeStart() error {
 	// is complete. Any errors as a result of this will just be bubbled out in the logger,
 	// we don't need to actively do anything about it at this point, worse comes to worst the
 	// server starts in a weird state and the user can manually adjust.
-	s.PublishConsoleOutputFromDaemon("Updating process configuration files...")
+	s.PublishConsoleOutputFromDaemon("更新进程配置文件...")
 	s.UpdateConfigurationFiles()
 
 	if config.Get().System.CheckPermissionsOnBoot {
-		s.PublishConsoleOutputFromDaemon("Ensuring file permissions are set correctly, this could take a few seconds...")
+		s.PublishConsoleOutputFromDaemon("检查文件权限是否设置正确, 请稍等一会...")
 		// Ensure all the server file permissions are set correctly before booting the process.
 		if err := s.Filesystem().Chown("/"); err != nil {
-			return errors.WithMessage(err, "failed to chown root server directory during pre-boot process")
+			return errors.WithMessage(err, "在预启动过程中设置文件权限失败。")
 		}
 	}
 
